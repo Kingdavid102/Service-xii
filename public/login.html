@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Bank of America</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/min.css/min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .header-logo-circle {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #c41e3a 0%, #a01830 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .header-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-bank-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1e3c72;
+            letter-spacing: 0.5px;
+        }
+
+        .header-subtitle {
+            font-size: 11px;
+            color: #999;
+        }
+
+        .login-wrapper {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 400px;
+            padding: 40px;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .form-subtitle {
+            font-size: 13px;
+            color: #666;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+            font-size: 14px;
+        }
+
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        input[type="email"]:focus,
+        input[type="password"]:focus {
+            outline: none;
+            border-color: #2a5298;
+            box-shadow: 0 0 0 3px rgba(42, 82, 152, 0.1);
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #c41e3a 0%, #a01830 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(196, 30, 58, 0.3);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .form-footer {
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .form-footer p {
+            margin: 0;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .form-footer a {
+            color: #2a5298;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .form-footer a:hover {
+            color: #c41e3a;
+        }
+
+        .error-message {
+            color: #c41e3a;
+            font-size: 13px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .forgot-password {
+            text-align: right;
+            margin-top: 10px;
+        }
+
+        .forgot-password a {
+            font-size: 13px;
+            color: #2a5298;
+            text-decoration: none;
+        }
+
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
+
+        .admin-login-note {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 6px;
+            padding: 10px;
+            margin-top: 15px;
+            font-size: 12px;
+            color: #856404;
+            text-align: center;
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 30px 20px;
+                border-radius: 8px;
+            }
+
+            .header {
+                padding: 12px;
+            }
+
+            .header-logo-circle {
+                width: 40px;
+                height: 40px;
+                font-size: 20px;
+            }
+
+            .header-bank-name {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Added header with logo and bank name -->
+    <div class="header">
+        <div class="header-logo-circle">🏦</div>
+        <div class="header-text">
+            <div class="header-bank-name">BANK OF AMERICA</div>
+            <div class="header-subtitle">Secure Banking</div>
+        </div>
+    </div>
+
+    <div class="login-wrapper">
+        <div class="login-container">
+            <div class="form-title">Sign In</div>
+            <div class="form-subtitle">Access your bank account</div>
+
+            
+
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        name="email" 
+                        placeholder="you@example.com"
+                        required
+                        autocomplete="email"
+                    >
+                    <div class="error-message" id="emailError"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        placeholder="••••••••"
+                        required
+                        autocomplete="current-password"
+                    >
+                    <div class="error-message" id="passwordError"></div>
+                    <div class="forgot-password">
+                        <a href="#forgot">Forgot password?</a>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary" id="loginBtn">Sign In</button>
+
+                <div class="error-message" id="generalError"></div>
+            </form>
+
+            <div class="form-footer">
+                <p>Don't have an account? <a href="register.html">Create one now</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const loginForm = document.getElementById('loginForm');
+        const loginBtn = document.getElementById('loginBtn');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = emailInput.value.trim();
+            const password = passwordInput.value;
+
+            // Clear previous errors
+            document.getElementById('emailError').classList.remove('show');
+            document.getElementById('passwordError').classList.remove('show');
+            document.getElementById('generalError').classList.remove('show');
+
+            // Validation
+            if (!email || !password) {
+                if (!email) {
+                    document.getElementById('emailError').textContent = 'Email is required';
+                    document.getElementById('emailError').classList.add('show');
+                }
+                if (!password) {
+                    document.getElementById('passwordError').textContent = 'Password is required';
+                    document.getElementById('passwordError').classList.add('show');
+                }
+                return;
+            }
+
+            // ADMIN LOGIN CHECK
+            if (email === 'admin@bankofAmerica.com' && password === 'admin123') {
+                localStorage.setItem('adminToken', 'admin-token-' + Date.now());
+                localStorage.setItem('adminName', 'Administrator');
+                window.location.href = 'admin.html';
+                return;
+            }
+
+            loginBtn.disabled = true;
+            const originalText = loginBtn.textContent;
+            loginBtn.textContent = 'Signing in...';
+
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    document.getElementById('generalError').textContent = data.message || 'Login failed';
+                    document.getElementById('generalError').classList.add('show');
+                } else {
+                    localStorage.setItem('authToken', data.token);
+                    localStorage.setItem('userId', data.userId);
+                    window.location.href = 'app.html';
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                document.getElementById('generalError').textContent = 'An error occurred. Please try again.';
+                document.getElementById('generalError').classList.add('show');
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.textContent = originalText;
+            }
+        });
+
+        window.addEventListener('load', function() {
+            const token = localStorage.getItem('authToken');
+            const userId = localStorage.getItem('userId');
+            const adminToken = localStorage.getItem('adminToken');
+            
+            if (token && userId) {
+                window.location.href = 'app.html';
+            } else if (adminToken) {
+                window.location.href = 'admin.html';
+            }
+        });
+    </script>
+</body>
+</html>

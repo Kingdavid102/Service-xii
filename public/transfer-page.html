@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transfer Money - Bank of America</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/min.css/min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f5f5f5;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        .mobile-container {
+            max-width: 480px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid #c41e3a;
+        }
+
+        .header-title {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .header-back {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            padding-bottom: 80px;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            align-items: center;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            flex: 1;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #ddd;
+            color: #999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .step.active .step-number {
+            background: #c41e3a;
+            color: white;
+        }
+
+        .step.completed .step-number {
+            background: #28a745;
+            color: white;
+        }
+
+        .step-label {
+            font-size: 11px;
+            color: #999;
+            text-align: center;
+        }
+
+        .step.active .step-label {
+            color: #c41e3a;
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+
+        select,
+        input[type="text"],
+        input[type="email"],
+        input[type="number"],
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+
+        select:focus,
+        input:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #2a5298;
+            box-shadow: 0 0 0 3px rgba(42, 82, 152, 0.1);
+        }
+
+        .payment-methods {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .payment-method {
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .payment-method:hover {
+            border-color: #2a5298;
+        }
+
+        .payment-method.selected {
+            border-color: #c41e3a;
+            background: rgba(196, 30, 58, 0.05);
+        }
+
+        .payment-icon {
+            font-size: 24px;
+            margin-bottom: 6px;
+        }
+
+        .payment-name {
+            font-weight: 600;
+            font-size: 13px;
+            color: #333;
+        }
+
+        .amount-display {
+            background: #f9f9f9;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 18px;
+            text-align: center;
+        }
+
+        .amount-label {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 5px;
+        }
+
+        .amount-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #c41e3a;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2a5298;
+            padding: 12px;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #1565c0;
+            margin-bottom: 18px;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #c41e3a 0%, #a01830 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(196, 30, 58, 0.3);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .error-message {
+            color: #c41e3a;
+            font-size: 13px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .form-section {
+            display: none;
+        }
+
+        .form-section.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .recipient-info {
+            background: #f5f5f5;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            border-left: 4px solid #2a5298;
+            display: none;
+        }
+
+        .recipient-info.show {
+            display: block;
+        }
+
+        .recipient-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .recipient-account {
+            font-size: 12px;
+            color: #666;
+        }
+
+        @media (max-width: 480px) {
+            .mobile-container {
+                box-shadow: none;
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="mobile-container">
+        <!-- Header -->
+        <div class="header">
+            <button class="header-back" onclick="goBack()">←</button>
+            <div class="header-title">Send Money</div>
+            <div style="width: 24px;"></div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Step Indicator -->
+            <div class="step-indicator">
+                <div class="step active" id="step1">
+                    <div class="step-number">1</div>
+                    <div class="step-label">Account</div>
+                </div>
+                <div class="step" id="step2">
+                    <div class="step-number">2</div>
+                    <div class="step-label">Method</div>
+                </div>
+                <div class="step" id="step3">
+                    <div class="step-number">3</div>
+                    <div class="step-label">Details</div>
+                </div>
+                <div class="step" id="step4">
+                    <div class="step-number">4</div>
+                    <div class="step-label">Review</div>
+                </div>
+            </div>
+
+            <!-- Step 1: Select Account -->
+            <div class="form-section active" id="section1">
+                <div class="form-group">
+                    <label>From which account?</label>
+                    <select id="fromAccount" onchange="updateStep()">
+                        <option value="">Select account...</option>
+                    </select>
+                    <div class="error-message" id="error1"></div>
+                </div>
+                <button class="btn-primary" onclick="nextStep(1)">Continue</button>
+            </div>
+
+            <!-- Step 2: Select Payment Method -->
+            <div class="form-section" id="section2">
+                <label style="margin-bottom: 14px; display: block;">How would you like to send?</label>
+                <div class="payment-methods">
+                    <div class="payment-method" onclick="selectPaymentMethod(this, 'internal')">
+                        <div class="payment-icon">🏦</div>
+                        <div class="payment-name">My Bank</div>
+                    </div>
+                    <div class="payment-method" onclick="selectPaymentMethod(this, 'interbank')">
+                        <div class="payment-icon">🌐</div>
+                        <div class="payment-name">Other Bank</div>
+                    </div>
+                    <div class="payment-method" onclick="selectPaymentMethod(this, 'zelle')">
+                        <div class="payment-icon">Ⓩ</div>
+                        <div class="payment-name">Zelle</div>
+                    </div>
+                    <div class="payment-method" onclick="selectPaymentMethod(this, 'wire')">
+                        <div class="payment-icon">📞</div>
+                        <div class="payment-name">Wire Transfer</div>
+                    </div>
+                </div>
+                <button class="btn-primary" onclick="nextStep(2)">Continue</button>
+            </div>
+
+            <!-- Step 3: Enter Details -->
+            <div class="form-section" id="section3">
+                <div class="form-group">
+                    <label>Recipient Account Number</label>
+                    <input 
+                        type="text" 
+                        id="recipientAccount" 
+                        placeholder="Enter 10-digit account number"
+                        onblur="lookupRecipient()"
+                    >
+                    <div class="error-message" id="error3"></div>
+                </div>
+
+                <div class="recipient-info" id="recipientInfo">
+                    <div class="recipient-name" id="recipientName"></div>
+                    <div class="recipient-account" id="recipientAccount2"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>Amount</label>
+                    <input 
+                        type="number" 
+                        id="amount" 
+                        placeholder="0.00"
+                        min="0"
+                        step="0.01"
+                        onchange="updateAmountDisplay()"
+                    >
+                    <div class="error-message" id="error4"></div>
+                </div>
+
+                <div class="amount-display" id="amountDisplay" style="display: none;">
+                    <div class="amount-label">Amount to send</div>
+                    <div class="amount-value" id="amountValue">$0.00</div>
+                </div>
+
+                <div class="form-group">
+                    <label>Reference/Description</label>
+                    <textarea 
+                        id="description" 
+                        placeholder="Payment for..."
+                        rows="3"
+                    ></textarea>
+                </div>
+
+                <button class="btn-primary" onclick="nextStep(3)">Review</button>
+            </div>
+
+            <!-- Step 4: Review and Confirm -->
+            <div class="form-section" id="section4">
+                <div class="info-box">
+                    Please review your transaction details before confirming.
+                </div>
+
+                <div class="form-group" style="background: #f9f9f9; padding: 14px; border-radius: 8px;">
+                    <div style="margin-bottom: 12px;">
+                        <span style="color: #999; font-size: 13px;">From Account</span>
+                        <div style="font-weight: 600; color: #333; margin-top: 4px;" id="reviewFrom"></div>
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <span style="color: #999; font-size: 13px;">To</span>
+                        <div style="font-weight: 600; color: #333; margin-top: 4px;" id="reviewTo"></div>
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <span style="color: #999; font-size: 13px;">Amount</span>
+                        <div style="font-weight: 600; color: #c41e3a; font-size: 18px; margin-top: 4px;" id="reviewAmount"></div>
+                    </div>
+                    <div>
+                        <span style="color: #999; font-size: 13px;">Note</span>
+                        <div style="font-weight: 600; color: #333; margin-top: 4px;" id="reviewDescription"></div>
+                    </div>
+                </div>
+
+                <button class="btn-primary" onclick="submitTransfer()">Confirm & Send</button>
+                <button style="width: 100%; padding: 12px; background: white; border: 1px solid #ddd; border-radius: 8px; margin-top: 10px; cursor: pointer; font-weight: 600; color: #333;" onclick="prevStep(4)">Back</button>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <button class="nav-item" onclick="window.location.href='app.html'">
+                <span>💰</span>
+                <span class="nav-item-label">Accounts</span>
+            </button>
+            <button class="nav-item active" onclick="#">
+                <span>🔄</span>
+                <span class="nav-item-label">Transfer</span>
+            </button>
+            <button class="nav-item" onclick="window.location.href='transactions.html'">
+                <span>📜</span>
+                <span class="nav-item-label">History</span>
+            </button>
+            <button class="nav-item" onclick="window.location.href='profile.html'">
+                <span>👤</span>
+                <span class="nav-item-label">Profile</span>
+            </button>
+            <button class="nav-item" onclick="openMenu()">
+                <span>☰</span>
+                <span class="nav-item-label">Menu</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        let transferData = {
+            fromAccount: null,
+            method: null,
+            recipientAccount: null,
+            amount: null,
+            description: null
+        };
+
+        let userAccounts = [];
+
+        // Load accounts on page load
+        window.addEventListener('load', loadAccounts);
+
+        async function loadAccounts() {
+            const userId = localStorage.getItem('userId');
+            try {
+                const response = await fetch(`/api/accounts/${userId}`);
+                userAccounts = await response.json();
+                
+                const select = document.getElementById('fromAccount');
+                select.innerHTML = '<option value="">Select account...</option>';
+                
+                userAccounts.forEach(acc => {
+                    const option = document.createElement('option');
+                    option.value = acc.accountId;
+                    option.textContent = `${acc.accountName} - $${acc.balance.toFixed(2)} (${acc.accountNumber})`;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading accounts:', error);
+            }
+        }
+
+        function selectPaymentMethod(element, method) {
+            document.querySelectorAll('.payment-method').forEach(el => el.classList.remove('selected'));
+            element.classList.add('selected');
+            transferData.method = method;
+        }
+
+        function updateAmountDisplay() {
+            const amount = parseFloat(document.getElementById('amount').value);
+            if (amount > 0) {
+                document.getElementById('amountDisplay').style.display = 'block';
+                document.getElementById('amountValue').textContent = `$${amount.toFixed(2)}`;
+                transferData.amount = amount;
+            }
+        }
+
+        function nextStep(step) {
+            // Validate current step
+            if (step === 1) {
+                if (!document.getElementById('fromAccount').value) {
+                    document.getElementById('error1').textContent = 'Please select an account';
+                    document.getElementById('error1').classList.add('show');
+                    return;
+                }
+                transferData.fromAccount = document.getElementById('fromAccount').value;
+            } else if (step === 2) {
+                if (!transferData.method) {
+                    alert('Please select a payment method');
+                    return;
+                }
+            } else if (step === 3) {
+                if (!document.getElementById('recipientAccount').value || !document.getElementById('amount').value) {
+                    document.getElementById('error3').textContent = 'Please fill in all fields';
+                    document.getElementById('error3').classList.add('show');
+                    return;
+                }
+                transferData.recipientAccount = document.getElementById('recipientAccount').value;
+                transferData.description = document.getElementById('description').value;
+                updateReview();
+            }
+
+            // Move to next step
+            document.getElementById(`section${currentStep}`).classList.remove('active');
+            document.getElementById(`step${currentStep}`).classList.add('completed');
+            document.getElementById(`step${currentStep}`).classList.remove('active');
+
+            currentStep = step + 1;
+            document.getElementById(`section${currentStep}`).classList.add('active');
+            document.getElementById(`step${currentStep}`).classList.add('active');
+        }
+
+        function prevStep(step) {
+            document.getElementById(`section${currentStep}`).classList.remove('active');
+            currentStep = step - 1;
+            document.getElementById(`section${currentStep}`).classList.add('active');
+            document.getElementById(`step${step}`).classList.remove('completed');
+            document.getElementById(`step${step}`).classList.remove('active');
+            document.getElementById(`step${currentStep}`).classList.add('active');
+        }
+
+        function updateReview() {
+            const fromAcc = userAccounts.find(a => a.accountId === transferData.fromAccount);
+            document.getElementById('reviewFrom').textContent = `${fromAcc.accountName} - $${fromAcc.balance.toFixed(2)}`;
+            document.getElementById('reviewTo').textContent = transferData.recipientAccount;
+            document.getElementById('reviewAmount').textContent = `$${parseFloat(transferData.amount).toFixed(2)}`;
+            document.getElementById('reviewDescription').textContent = transferData.description || 'No description';
+        }
+
+        async function submitTransfer() {
+            try {
+                const fromAccountId = transferData.fromAccount;
+                const toAccountNumber = transferData.recipientAccount;
+                const amount = transferData.amount;
+                const type = transferData.method;
+                const description = transferData.description;
+
+                console.log('🔄 Sending transfer:', { fromAccountId, toAccountNumber, amount, type });
+
+                const response = await fetch('/api/transactions', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        fromAccountId,
+                        toAccountNumber,
+                        amount: parseFloat(amount),
+                        type,
+                        description
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert('✅ Transfer successful!');
+                    window.location.href = 'app.html';
+                } else {
+                    alert('❌ Transfer failed: ' + data.message);
+                }
+            } catch (error) {
+                console.error('Transfer error:', error);
+                alert('❌ Transfer failed: Network error');
+            }
+        }
+
+        async function lookupRecipient() {
+            const accountInput = document.getElementById('recipientAccount').value;
+            
+            if (!accountInput || accountInput.length < 10) {
+                document.getElementById('recipientInfo').classList.remove('show');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/verify-account/${accountInput}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('recipientName').textContent = data.userName;
+                    document.getElementById('recipientAccount2').textContent = `Account: ${data.accountName} (${data.accountNumber})`;
+                    document.getElementById('recipientInfo').classList.add('show');
+                } else {
+                    document.getElementById('recipientInfo').classList.remove('show');
+                }
+            } catch (error) {
+                console.error('Lookup error:', error);
+                document.getElementById('recipientInfo').classList.remove('show');
+            }
+        }
+
+        function updateStep() {
+            // Update available amounts when account changes
+        }
+
+        function goBack() {
+            window.history.back();
+        }
+
+        function openMenu() {
+            alert('Menu options');
+        }
+
+        // Add bottom nav styles
+        const style = document.createElement('style');
+        style.textContent = `
+            .bottom-nav {
+                position: fixed;
+                bottom: 0;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 100%;
+                max-width: 480px;
+                height: 70px;
+                background: white;
+                border-top: 1px solid #ddd;
+                display: flex;
+                justify-content: space-around;
+                z-index: 20;
+            }
+            .nav-item {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 4px;
+                flex: 1;
+                cursor: pointer;
+                background: none;
+                border: none;
+                font-size: 20px;
+                color: #999;
+                text-decoration: none;
+            }
+            .nav-item.active {
+                color: #c41e3a;
+            }
+            .nav-item-label {
+                font-size: 10px;
+                color: inherit;
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
