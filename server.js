@@ -107,7 +107,8 @@ app.post('/api/register', (req, res) => {
             status: 'successful',
             profilePhoto: '',
             createdAt: new Date().toISOString(),
-            adminNote: ''
+            adminNote: '',
+            authVerification: { enabled: false, authName: '', authCode: '' } // Added authVerification to user object
         };
 
         users.push(newUser);
@@ -251,7 +252,8 @@ app.get('/api/user/:userId', (req, res) => {
             status: user.status,
             profilePhoto: user.profilePhoto,
             adminNote: user.adminNote,
-            createdAt: user.createdAt
+            createdAt: user.createdAt,
+            authVerification: user.authVerification || { enabled: false, authName: '', authCode: '' }
         });
     } catch (error) {
         res.status(500).json({ message: 'Error fetching user' });
@@ -487,7 +489,8 @@ app.get('/api/admin/users', (req, res) => {
             phone: u.phone,
             status: u.status,
             createdAt: u.createdAt,
-            adminNote: u.adminNote
+            adminNote: u.adminNote,
+            authVerification: u.authVerification // Included authVerification in admin user list
         })));
     } catch (error) {
         res.status(500).json({ message: 'Error fetching users' });
@@ -497,7 +500,7 @@ app.get('/api/admin/users', (req, res) => {
 app.put('/api/admin/user/:userId', (req, res) => {
     try {
         const { userId } = req.params;
-        const { status, adminNote } = req.body;
+        const { status, adminNote, authVerification } = req.body;
 
         const users = readJSON(usersFile);
         const user = users.find(u => u.userId === userId);
@@ -508,6 +511,7 @@ app.put('/api/admin/user/:userId', (req, res) => {
 
         if (status) user.status = status;
         if (adminNote !== undefined) user.adminNote = adminNote;
+        if (authVerification !== undefined) user.authVerification = authVerification;
 
         writeJSON(usersFile, users);
 
@@ -568,6 +572,65 @@ app.post('/api/admin/fund-account', (req, res) => {
     } catch (error) {
         console.error('Funding error:', error);
         res.status(500).json({ message: 'Funding failed' });
+    }
+});
+
+app.post('/api/admin/debit-account', (req, res) => {
+    try {
+        const { accountNumber, amount, note } = req.body;
+
+        if (!accountNumber || !amount || amount <= 0) {
+            return res.status(400).json({ message: 'Invalid debit data' });
+        }
+
+        const accounts = readJSON(accountsFile);
+        const account = accounts.find(a => a.accountNumber === accountNumber);
+
+        if (!account) {
+            return res.status(404).json({ message: 'Account not found' });
+        }
+
+        // Check if account has sufficient balance
+        if (account.balance < amount) {
+            return res.status(400).json({ message: 'Insufficient funds in account' });
+        }
+
+        // Deduct funds
+        account.balance = parseFloat((account.balance - amount).toFixed(2));
+        account.availableBalance = parseFloat((account.availableBalance - amount).toFixed(2));
+
+        writeJSON(accountsFile, accounts);
+
+        // Log transaction
+        const transaction = {
+            transactionId: generateTransactionId(),
+            fromAccountId: account.accountId,
+            toAccountId: null,
+            fromUserId: account.userId,
+            toUserId: 'admin',
+            amount: parseFloat(amount),
+            type: 'admin-debit',
+            description: note || 'Admin debit',
+            status: 'completed',
+            timestamp: new Date().toISOString()
+        };
+
+        const transactions = readJSON(transactionsFile);
+        transactions.push(transaction);
+        writeJSON(transactionsFile, transactions);
+
+        // Create notification for user
+        createNotification(
+            account.userId,
+            'Account Debited',
+            `$${amount.toFixed(2)} has been debited from your account${note ? ': ' + note : ''}`,
+            'debit'
+        );
+
+        res.json({ message: 'Account debited successfully', account });
+    } catch (error) {
+        console.error('Debit error:', error);
+        res.status(500).json({ message: 'Debit failed' });
     }
 });
 
