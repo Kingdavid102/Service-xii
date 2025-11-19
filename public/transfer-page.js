@@ -58,6 +58,14 @@ function selectPaymentMethod(element, method) {
     } else {
         document.getElementById('zelleFields').style.display = 'none';
         document.getElementById('standardFields').style.display = 'block';
+        
+        if (method === 'mybank') {
+            document.getElementById('recipientLookupContainer').style.display = 'block';
+        } else {
+            // External transfers (other bank, wire) don't need recipient verification
+            document.getElementById('recipientLookupContainer').style.display = 'none';
+            document.getElementById('recipientInfo').classList.remove('show');
+        }
     }
 }
 
@@ -228,7 +236,7 @@ async function submitTransfer() {
 async function executeStandardTransfer() {
     try {
         const fromAccountId = transferData.fromAccount;
-        const toAccountNumber = transferData.recipientAccount;
+        const toAccountNumber = transferData.method === 'mybank' ? transferData.recipientAccount : null;
         const amount = transferData.amount;
         const type = transferData.method;
         const description = transferData.description;
@@ -307,6 +315,10 @@ async function lookupRecipient() {
     
     if (!accountInput || accountInput.length < 10) {
         document.getElementById('recipientInfo').classList.remove('show');
+        return;
+    }
+
+    if (transferData.method !== 'mybank') {
         return;
     }
 
