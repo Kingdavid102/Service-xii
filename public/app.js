@@ -331,7 +331,7 @@ function openPage(page) {
 }
 
 function openMenu() {
-    const choice = prompt('Menu Options:\n1. Profile\n2. Transactions\n3. Notifications\n4. Settings\n5. Logout\n6. Admin Panel');
+    const choice = prompt('Menu Options:\n1. Profile\n2. Transactions\n3. Notifications\n4. Settings\n5. Logout');
     if (choice === '1') {
         window.location.href = 'profile.html';
     } else if (choice === '2') {
