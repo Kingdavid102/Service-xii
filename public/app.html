@@ -686,6 +686,7 @@
             </button>
         </div>
     </div>
+    
     <!-- Begin of Chaport Live Chat code -->
 <script type="text/javascript">
 (function(w,d,v3){
@@ -734,7 +735,7 @@ if(w.chaport)return;v3=w.chaport={};v3._q=[];v3._l={};v3.q=function(){v3._q.push
                 item.innerHTML = `
                     <div class="account-details">
                         <div class="account-name">${account.accountName} - ${account.accountNumber}</div>
-                        <div class="account-balance">$${account.availableBalance.toFixed(2)}</div>
+                        <div class="account-balance">$${formatNumber(account.availableBalance.toFixed(2))}</div>
                     </div>
                     <button class="view-button" onclick="viewAccount('${account.accountId}')">VIEW</button>
                 `;
@@ -754,7 +755,7 @@ if(w.chaport)return;v3=w.chaport={};v3._q=[];v3._l={};v3.q=function(){v3._q.push
                 <div class="bank-account-item">
                     <div class="account-details">
                         <div class="account-name">Total Balance - All Accounts</div>
-                        <div class="account-balance">$${totalBalance.toFixed(2)}</div>
+                        <div class="account-balance">$${formatNumber(totalBalance.toFixed(2))}</div>
                     </div>
                 </div>
             `;
@@ -764,7 +765,7 @@ if(w.chaport)return;v3=w.chaport={};v3._q=[];v3._l={};v3.q=function(){v3._q.push
                     <div class="bank-account-item">
                         <div class="account-details">
                             <div class="account-name">${acc.accountName} - ${acc.accountNumber}</div>
-                            <div class="account-balance">$${acc.balance.toFixed(2)}</div>
+                            <div class="account-balance">$${formatNumber(acc.balance.toFixed(2))}</div>
                         </div>
                     </div>
                 `;
@@ -800,7 +801,7 @@ if(w.chaport)return;v3=w.chaport={};v3._q=[];v3._l={};v3.q=function(){v3._q.push
                         <div class="account-details">
                             <div class="account-name">${type} - ${trans.type}</div>
                             <div class="account-balance" style="color: ${isDebit ? '#c41e3a' : '#28a745'}">
-                                ${isDebit ? '-' : '+'}$${trans.amount.toFixed(2)}
+                                ${isDebit ? '-' : '+'}$${formatNumber(trans.amount.toFixed(2))}
                             </div>
                             <div style="font-size: 11px; color: #999;">${date}</div>
                         </div>
@@ -823,6 +824,11 @@ if(w.chaport)return;v3=w.chaport={};v3._q=[];v3._l={};v3.q=function(){v3._q.push
 
         function toggleAlerts() {
             alert('Alerts enabled ✅.');
+        }
+
+        // Add formatNumber function to enable comma formatting in this script
+        function formatNumber(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         }
     </script>
 </body>

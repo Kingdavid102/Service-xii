@@ -343,6 +343,10 @@
     <script>
         let selectedAccount = null;
 
+        function formatNumber(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
         window.addEventListener('load', loadAccountDetails);
 
         function loadAccountDetails() {
@@ -356,10 +360,10 @@
 
             document.getElementById('accountName').textContent = selectedAccount.accountName;
             document.getElementById('accountNumber').textContent = selectedAccount.accountNumber;
-            document.getElementById('totalBalance').textContent = `$${selectedAccount.balance.toFixed(2)}`;
+            document.getElementById('totalBalance').textContent = `$${formatNumber(selectedAccount.balance.toFixed(2))}`;
             document.getElementById('accountType').textContent = selectedAccount.type.charAt(0).toUpperCase() + selectedAccount.type.slice(1);
-            document.getElementById('currentBalance').textContent = `$${selectedAccount.balance.toFixed(2)}`;
-            document.getElementById('availableBalance').textContent = `$${selectedAccount.availableBalance.toFixed(2)}`;
+            document.getElementById('currentBalance').textContent = `$${formatNumber(selectedAccount.balance.toFixed(2))}`;
+            document.getElementById('availableBalance').textContent = `$${formatNumber(selectedAccount.availableBalance.toFixed(2))}`;
             document.getElementById('accountStatus').textContent = selectedAccount.status;
             document.getElementById('accountOpened').textContent = new Date(selectedAccount.createdAt).toLocaleDateString();
 
@@ -398,7 +402,7 @@
                                     <div class="transaction-date">${date}</div>
                                 </div>
                             </div>
-                            <div class="transaction-amount">${isDebit ? '-' : '+'}$${trans.amount.toFixed(2)}</div>
+                            <div class="transaction-amount">${isDebit ? '-' : '+'}$${formatNumber(trans.amount.toFixed(2))}</div>
                         </div>
                     `;
                 });
@@ -424,4 +428,3 @@
         }
     </script>
 </body>
-</html>

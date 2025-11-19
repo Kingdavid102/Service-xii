@@ -61,6 +61,10 @@ function selectPaymentMethod(element, method) {
     }
 }
 
+function formatNumber(num) {
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
 function updateAmountDisplay() {
     let amount;
     if (transferData.method === 'zelle') {
@@ -71,7 +75,7 @@ function updateAmountDisplay() {
 
     if (amount > 0) {
         document.getElementById('amountDisplay').style.display = 'block';
-        document.getElementById('amountValue').textContent = `$${amount.toFixed(2)}`;
+        document.getElementById('amountValue').textContent = `$${formatNumber(amount.toFixed(2))}`;
         transferData.amount = amount;
     }
 }
@@ -149,7 +153,7 @@ function showZelleReceipt() {
     const initial = data.name.charAt(0).toUpperCase();
     document.getElementById('zelleAvatar').textContent = initial;
     
-    document.getElementById('zelleReceiptAmount').textContent = `$${data.amount.toFixed(2)}`;
+    document.getElementById('zelleReceiptAmount').textContent = `$${formatNumber(data.amount.toFixed(2))}`;
     document.getElementById('zelleReceiptName').textContent = data.name;
     document.getElementById('zelleReceiptPhone').textContent = data.phone;
     document.getElementById('zelleReceiptEnrolled').textContent = `Enrolled with Zelle® as ${data.name.toUpperCase()}`;
@@ -206,9 +210,9 @@ async function executeZelleTransfer() {
 
 function updateReview() {
     const fromAcc = userAccounts.find(a => a.accountId === transferData.fromAccount);
-    document.getElementById('reviewFrom').textContent = `${fromAcc.accountName} - $${fromAcc.balance.toFixed(2)}`;
+    document.getElementById('reviewFrom').textContent = `${fromAcc.accountName} - $${formatNumber(fromAcc.balance.toFixed(2))}`;
     document.getElementById('reviewTo').textContent = transferData.recipientAccount;
-    document.getElementById('reviewAmount').textContent = `$${parseFloat(transferData.amount).toFixed(2)}`;
+    document.getElementById('reviewAmount').textContent = `$${formatNumber(parseFloat(transferData.amount).toFixed(2))}`;
     document.getElementById('reviewDescription').textContent = transferData.description || 'No description';
 }
 
@@ -256,7 +260,7 @@ async function executeStandardTransfer() {
 
 function showTransactionSuccess(title) {
     document.getElementById('successTitle').textContent = title;
-    document.getElementById('successAmount').textContent = `$${transferData.amount.toFixed(2)}`;
+    document.getElementById('successAmount').textContent = `$${formatNumber(transferData.amount.toFixed(2))}`;
     document.getElementById('successModal').classList.add('show');
 }
 

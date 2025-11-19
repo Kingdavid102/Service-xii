@@ -131,6 +131,10 @@ function renderGreeting() {
     }
 }
 
+function formatNumber(num) {
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
 function renderAccounts() {
     const accountsList = document.getElementById('accountsList');
     accountsList.innerHTML = '';
@@ -158,7 +162,7 @@ function renderAccounts() {
             </div>
             <div class="account-balance">
                 <div class="balance-label">Available Balance</div>
-                <div class="balance-amount">$${account.availableBalance.toFixed(2)}</div>
+                <div class="balance-amount">$${formatNumber(account.availableBalance.toFixed(2))}</div>
             </div>
             <div class="account-actions">
                 <button class="btn-view" onclick="event.stopPropagation(); viewAccount('${account.accountId}')">VIEW</button>
@@ -187,7 +191,7 @@ function renderDashboard() {
             </div>
             <div class="account-balance">
                 <div class="balance-label">Net Worth</div>
-                <div class="balance-amount">$${totalBalance.toFixed(2)}</div>
+                <div class="balance-amount">$${formatNumber(totalBalance.toFixed(2))}</div>
             </div>
         </div>
     `;
@@ -204,7 +208,7 @@ function renderDashboard() {
                 </div>
                 <div class="account-balance">
                     <div class="balance-label">Current Balance</div>
-                    <div class="balance-amount">$${acc.balance.toFixed(2)}</div>
+                    <div class="balance-amount">$${formatNumber(acc.balance.toFixed(2))}</div>
                 </div>
             </div>
         `;
@@ -246,7 +250,7 @@ function renderDashboard() {
                 <div class="account-balance">
                     <div class="balance-label">Amount</div>
                     <div class="balance-amount" style="color: ${isDebit ? '#c41e3a' : '#28a745'}">
-                        ${isDebit ? '-' : '+'}$${trans.amount.toFixed(2)}
+                        ${isDebit ? '-' : '+'}$${formatNumber(trans.amount.toFixed(2))}
                     </div>
                 </div>
             `;
@@ -331,7 +335,7 @@ function openPage(page) {
 }
 
 function openMenu() {
-    const choice = prompt('Menu Options:\n1. Profile\n2. Transactions\n3. Notifications\n4. Settings\n5. Logout');
+    const choice = prompt('Menu Options:\n1. Profile\n2. Transactions\n3. Notifications\n4. Settings\n5. Logout\n6. Admin Panel');
     if (choice === '1') {
         window.location.href = 'profile.html';
     } else if (choice === '2') {
