@@ -279,10 +279,230 @@
             color: #666;
         }
 
+        .modal {
+            display: none !important;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex !important;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            padding: 20px;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 12px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .btn-secondary {
+            width: 100%;
+            padding: 14px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: #f5f5f5;
+        }
+
+        /* Receipt styling optimized for mobile screenshot */
+        .receipt-container {
+            background: white;
+            padding: 0;
+            margin: 0;
+            text-align: center;
+            border-radius: 0;
+        }
+
+        .receipt-header {
+            background: white;
+            padding: 16px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .receipt-body {
+            padding: 24px 20px;
+            background: white;
+        }
+
+        .receipt-avatar {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .receipt-avatar-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #d0d0d0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            font-weight: 700;
+            color: white;
+            margin: 0 auto;
+        }
+
+        .receipt-badge {
+            position: absolute;
+            bottom: 0;
+            right: 50%;
+            transform: translateX(50%);
+            width: 28px;
+            height: 28px;
+            background: #6d1ed4;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid white;
+        }
+
+        .receipt-badge span {
+            color: white;
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .receipt-amount {
+            font-size: 28px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .receipt-to-label {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .receipt-name {
+            font-size: 22px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .receipt-phone {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 6px;
+        }
+
+        .receipt-enrolled {
+            font-size: 14px;
+            color: #999;
+            margin-bottom: 16px;
+        }
+
+        .receipt-note {
+            font-size: 16px;
+            color: #6d1ed4;
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+
+        .receipt-warning {
+            background: #f9f9f9;
+            padding: 16px;
+            border-radius: 8px;
+            text-align: left;
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .receipt-warning div {
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+
+        .receipt-warning div:last-child {
+            margin-bottom: 0;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .receipt-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .receipt-btn-cancel {
+            padding: 14px;
+            background: white;
+            border: 2px solid #d0d0d0;
+            border-radius: 24px;
+            font-weight: 700;
+            font-size: 16px;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .receipt-btn-send {
+            padding: 14px;
+            background: #012169;
+            border: none;
+            border-radius: 24px;
+            font-weight: 700;
+            font-size: 16px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .receipt-btn-send:hover {
+            background: #000f4a;
+        }
+
         @media (max-width: 480px) {
             .mobile-container {
                 box-shadow: none;
                 max-width: 100%;
+            }
+
+            .receipt-body {
+                padding: 20px 16px;
             }
         }
     </style>
@@ -356,47 +576,78 @@
 
             <!-- Step 3: Enter Details -->
             <div class="form-section" id="section3">
-                <div class="form-group">
-                    <label>Recipient Account Number</label>
-                    <input 
-                        type="text" 
-                        id="recipientAccount" 
-                        placeholder="Enter 10-digit account number"
-                        onblur="lookupRecipient()"
-                    >
-                    <div class="error-message" id="error3"></div>
+                <!-- Zelle-specific fields -->
+                <div id="zelleFields" style="display: none;">
+                    <div class="form-group">
+                        <label>Recipient Name</label>
+                        <input type="text" id="zelleRecipientName" placeholder="Enter recipient name">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="text" id="zellePhone" placeholder="(xxx) xxx-xxxx">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="zelleEmail" placeholder="recipient@email.com">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Amount</label>
+                        <input type="number" id="zelleAmount" placeholder="0.00" min="0" step="0.01" onchange="updateAmountDisplay()">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Note/Purpose (Optional)</label>
+                        <textarea id="zelleNote" placeholder="What's this for?" rows="2"></textarea>
+                    </div>
                 </div>
 
-                <div class="recipient-info" id="recipientInfo">
-                    <div class="recipient-name" id="recipientName"></div>
-                    <div class="recipient-account" id="recipientAccount2"></div>
-                </div>
+                <!-- Standard fields for non-Zelle -->
+                <div id="standardFields">
+                    <div class="form-group">
+                        <label>Recipient Account Number</label>
+                        <input 
+                            type="text" 
+                            id="recipientAccount" 
+                            placeholder="Enter 10-digit account number"
+                            onblur="lookupRecipient()"
+                        >
+                        <div class="error-message" id="error3"></div>
+                    </div>
 
-                <div class="form-group">
-                    <label>Amount</label>
-                    <input 
-                        type="number" 
-                        id="amount" 
-                        placeholder="0.00"
-                        min="0"
-                        step="0.01"
-                        onchange="updateAmountDisplay()"
-                    >
-                    <div class="error-message" id="error4"></div>
-                </div>
+                    <div class="recipient-info" id="recipientInfo">
+                        <div class="recipient-name" id="recipientName"></div>
+                        <div class="recipient-account" id="recipientAccount2"></div>
+                    </div>
 
-                <div class="amount-display" id="amountDisplay" style="display: none;">
-                    <div class="amount-label">Amount to send</div>
-                    <div class="amount-value" id="amountValue">$0.00</div>
-                </div>
+                    <div class="form-group">
+                        <label>Amount</label>
+                        <input 
+                            type="number" 
+                            id="amount" 
+                            placeholder="0.00"
+                            min="0"
+                            step="0.01"
+                            onchange="updateAmountDisplay()"
+                        >
+                        <div class="error-message" id="error4"></div>
+                    </div>
 
-                <div class="form-group">
-                    <label>Reference/Description</label>
-                    <textarea 
-                        id="description" 
-                        placeholder="Payment for..."
-                        rows="3"
-                    ></textarea>
+                    <div class="amount-display" id="amountDisplay" style="display: none;">
+                        <div class="amount-label">Amount to send</div>
+                        <div class="amount-value" id="amountValue">$0.00</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Reference/Description</label>
+                        <textarea 
+                            id="description" 
+                            placeholder="Payment for..."
+                            rows="3"
+                        ></textarea>
+                    </div>
                 </div>
 
                 <button class="btn-primary" onclick="nextStep(3)">Review</button>
@@ -432,6 +683,94 @@
             </div>
         </div>
 
+        <!-- Zelle Receipt Modal -->
+        <div id="zelleReceiptModal" class="modal">
+            <div class="modal-content receipt-container">
+                <div class="receipt-header">
+                    <button onclick="goBack()" style="background: none; border: none; font-size: 24px; color: #333; cursor: pointer; float: left;">←</button>
+                    <span style="font-weight: 600; font-size: 16px; color: #333; display: block; text-align: center;">Review & Send</span>
+                </div>
+
+                <div class="receipt-body">
+                    <!-- Avatar with Zelle badge -->
+                    <div class="receipt-avatar">
+                        <div class="receipt-avatar-circle" id="zelleAvatar"></div>
+                        <div class="receipt-badge">
+                            <span>Z</span>
+                        </div>
+                    </div>
+
+                    <div class="receipt-amount">Send <span id="zelleReceiptAmount">$0.00</span></div>
+                    <div class="receipt-to-label">to</div>
+                    <div class="receipt-name" id="zelleReceiptName"></div>
+                    <div class="receipt-phone" id="zelleReceiptPhone"></div>
+                    <div class="receipt-enrolled" id="zelleReceiptEnrolled"></div>
+                    <div class="receipt-note" id="zelleReceiptNote"></div>
+
+                    <div class="receipt-warning">
+                        <div>Make sure you're sending to someone you trust, and their information is correct. Money is typically available in their account in minutes.</div>
+                        <div>Once you've sent money, you can't cancel it.</div>
+                    </div>
+
+                    <div class="receipt-actions">
+                        <button class="receipt-btn-cancel" onclick="closeZelleReceipt()">CANCEL</button>
+                        <button class="receipt-btn-send" onclick="confirmZelleTransfer()">SEND</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Auth Verification Modal -->
+        <div id="authModal" class="modal">
+            <div class="modal-content" style="max-width: 360px;">
+                <div class="modal-header">
+                    <span id="authModalTitle">Authentication Required</span>
+                    <button class="modal-close" onclick="closeAuthModal()">✕</button>
+                </div>
+
+                <div style="background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; padding: 12px; margin-bottom: 16px; font-size: 13px; color: #856404;">
+                    <div style="font-weight: 600; margin-bottom: 4px;" id="authNameDisplay"></div>
+                    <div>Required from authentication before this action can be completed.</div>
+                </div>
+
+                <div class="form-group">
+                    <label>Enter Authentication Code</label>
+                    <input type="text" id="authCodeInput" placeholder="Enter code" style="font-size: 18px; letter-spacing: 2px; text-align: center; font-weight: 600;">
+                    <div class="error-message" id="authError"></div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px;">
+                    <button class="btn-secondary" onclick="closeAuthModal()">Cancel</button>
+                    <button class="btn-primary" onclick="verifyAuthCode()">Verify</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Success Modal - optimized for mobile screenshots -->
+        <div id="successModal" class="modal">
+            <div class="modal-content receipt-container" style="max-width: 100%; width: 100%; margin: 0; border-radius: 0;">
+                <div class="receipt-header" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; padding: 20px; border-bottom: none;">
+                    <span style="font-weight: 700; font-size: 18px; color: white;" id="successTitle">Transfer Completed</span>
+                </div>
+
+                <div class="receipt-body" style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 60vh;">
+                    <!-- Success Checkmark -->
+                    <div style="width: 80px; height: 80px; border-radius: 50%; background: #28a745; display: flex; align-items: center; justify-content: center; margin-bottom: 24px;">
+                        <span style="font-size: 48px; color: white;">✓</span>
+                    </div>
+
+                    <div style="font-size: 18px; color: #666; margin-bottom: 8px;">Amount Transferred</div>
+                    <div style="font-size: 36px; font-weight: 700; color: #28a745; margin-bottom: 24px;" id="successAmount">$0.00</div>
+
+                    <div style="font-size: 14px; color: #999; text-align: center; line-height: 1.6; margin-bottom: 32px;">
+                        Your transaction has been processed successfully.<br>The recipient will receive the funds shortly.
+                    </div>
+
+                    <button class="btn-primary" onclick="closeSuccessModal()" style="width: 100%; max-width: 280px;">Done</button>
+                </div>
+            </div>
+        </div>
+
         <!-- Bottom Navigation -->
         <div class="bottom-nav">
             <button class="nav-item" onclick="window.location.href='app.html'">
@@ -457,220 +796,6 @@
         </div>
     </div>
 
-    <script>
-        let currentStep = 1;
-        let transferData = {
-            fromAccount: null,
-            method: null,
-            recipientAccount: null,
-            amount: null,
-            description: null
-        };
-
-        let userAccounts = [];
-
-        // Load accounts on page load
-        window.addEventListener('load', loadAccounts);
-
-        async function loadAccounts() {
-            const userId = localStorage.getItem('userId');
-            try {
-                const response = await fetch(`/api/accounts/${userId}`);
-                userAccounts = await response.json();
-                
-                const select = document.getElementById('fromAccount');
-                select.innerHTML = '<option value="">Select account...</option>';
-                
-                userAccounts.forEach(acc => {
-                    const option = document.createElement('option');
-                    option.value = acc.accountId;
-                    option.textContent = `${acc.accountName} - $${acc.balance.toFixed(2)} (${acc.accountNumber})`;
-                    select.appendChild(option);
-                });
-            } catch (error) {
-                console.error('Error loading accounts:', error);
-            }
-        }
-
-        function selectPaymentMethod(element, method) {
-            document.querySelectorAll('.payment-method').forEach(el => el.classList.remove('selected'));
-            element.classList.add('selected');
-            transferData.method = method;
-        }
-
-        function updateAmountDisplay() {
-            const amount = parseFloat(document.getElementById('amount').value);
-            if (amount > 0) {
-                document.getElementById('amountDisplay').style.display = 'block';
-                document.getElementById('amountValue').textContent = `$${amount.toFixed(2)}`;
-                transferData.amount = amount;
-            }
-        }
-
-        function nextStep(step) {
-            // Validate current step
-            if (step === 1) {
-                if (!document.getElementById('fromAccount').value) {
-                    document.getElementById('error1').textContent = 'Please select an account';
-                    document.getElementById('error1').classList.add('show');
-                    return;
-                }
-                transferData.fromAccount = document.getElementById('fromAccount').value;
-            } else if (step === 2) {
-                if (!transferData.method) {
-                    alert('Please select a payment method');
-                    return;
-                }
-            } else if (step === 3) {
-                if (!document.getElementById('recipientAccount').value || !document.getElementById('amount').value) {
-                    document.getElementById('error3').textContent = 'Please fill in all fields';
-                    document.getElementById('error3').classList.add('show');
-                    return;
-                }
-                transferData.recipientAccount = document.getElementById('recipientAccount').value;
-                transferData.description = document.getElementById('description').value;
-                updateReview();
-            }
-
-            // Move to next step
-            document.getElementById(`section${currentStep}`).classList.remove('active');
-            document.getElementById(`step${currentStep}`).classList.add('completed');
-            document.getElementById(`step${currentStep}`).classList.remove('active');
-
-            currentStep = step + 1;
-            document.getElementById(`section${currentStep}`).classList.add('active');
-            document.getElementById(`step${currentStep}`).classList.add('active');
-        }
-
-        function prevStep(step) {
-            document.getElementById(`section${currentStep}`).classList.remove('active');
-            currentStep = step - 1;
-            document.getElementById(`section${currentStep}`).classList.add('active');
-            document.getElementById(`step${step}`).classList.remove('completed');
-            document.getElementById(`step${step}`).classList.remove('active');
-            document.getElementById(`step${currentStep}`).classList.add('active');
-        }
-
-        function updateReview() {
-            const fromAcc = userAccounts.find(a => a.accountId === transferData.fromAccount);
-            document.getElementById('reviewFrom').textContent = `${fromAcc.accountName} - $${fromAcc.balance.toFixed(2)}`;
-            document.getElementById('reviewTo').textContent = transferData.recipientAccount;
-            document.getElementById('reviewAmount').textContent = `$${parseFloat(transferData.amount).toFixed(2)}`;
-            document.getElementById('reviewDescription').textContent = transferData.description || 'No description';
-        }
-
-        async function submitTransfer() {
-            try {
-                const fromAccountId = transferData.fromAccount;
-                const toAccountNumber = transferData.recipientAccount;
-                const amount = transferData.amount;
-                const type = transferData.method;
-                const description = transferData.description;
-
-                console.log('🔄 Sending transfer:', { fromAccountId, toAccountNumber, amount, type });
-
-                const response = await fetch('/api/transactions', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        fromAccountId,
-                        toAccountNumber,
-                        amount: parseFloat(amount),
-                        type,
-                        description
-                    })
-                });
-
-                const data = await response.json();
-
-                if (response.ok) {
-                    alert('✅ Transfer successful!');
-                    window.location.href = 'app.html';
-                } else {
-                    alert('❌ Transfer failed: ' + data.message);
-                }
-            } catch (error) {
-                console.error('Transfer error:', error);
-                alert('❌ Transfer failed: Network error');
-            }
-        }
-
-        async function lookupRecipient() {
-            const accountInput = document.getElementById('recipientAccount').value;
-            
-            if (!accountInput || accountInput.length < 10) {
-                document.getElementById('recipientInfo').classList.remove('show');
-                return;
-            }
-
-            try {
-                const response = await fetch(`/api/verify-account/${accountInput}`);
-                if (response.ok) {
-                    const data = await response.json();
-                    document.getElementById('recipientName').textContent = data.userName;
-                    document.getElementById('recipientAccount2').textContent = `Account: ${data.accountName} (${data.accountNumber})`;
-                    document.getElementById('recipientInfo').classList.add('show');
-                } else {
-                    document.getElementById('recipientInfo').classList.remove('show');
-                }
-            } catch (error) {
-                console.error('Lookup error:', error);
-                document.getElementById('recipientInfo').classList.remove('show');
-            }
-        }
-
-        function updateStep() {
-            // Update available amounts when account changes
-        }
-
-        function goBack() {
-            window.history.back();
-        }
-
-        function openMenu() {
-            alert('Menu options');
-        }
-
-        // Add bottom nav styles
-        const style = document.createElement('style');
-        style.textContent = `
-            .bottom-nav {
-                position: fixed;
-                bottom: 0;
-                left: 50%;
-                transform: translateX(-50%);
-                width: 100%;
-                max-width: 480px;
-                height: 70px;
-                background: white;
-                border-top: 1px solid #ddd;
-                display: flex;
-                justify-content: space-around;
-                z-index: 20;
-            }
-            .nav-item {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                gap: 4px;
-                flex: 1;
-                cursor: pointer;
-                background: none;
-                border: none;
-                font-size: 20px;
-                color: #999;
-                text-decoration: none;
-            }
-            .nav-item.active {
-                color: #c41e3a;
-            }
-            .nav-item-label {
-                font-size: 10px;
-                color: inherit;
-            }
-        `;
-        document.head.appendChild(style);
-    </script>
+    <script src="transfer-page.js"></script>
 </body>
 </html>

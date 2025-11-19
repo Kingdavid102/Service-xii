@@ -431,6 +431,34 @@
                 <button class="btn-primary" onclick="fundAccount()">Fund Account</button>
             </div>
 
+            <!-- Debit Account -->
+            <div class="card">
+                <div class="card-title">
+                    <span class="card-icon">💳</span>
+                    <span>Debit User Account</span>
+                </div>
+
+                <div id="debitSuccessMsg" class="success-message"></div>
+                <div id="debitErrorMsg" class="error-message"></div>
+
+                <div class="form-group">
+                    <label>Account Number</label>
+                    <input type="text" id="debitAccountNumber" placeholder="Enter 10-digit account number">
+                </div>
+
+                <div class="form-group">
+                    <label>Amount ($)</label>
+                    <input type="number" id="debitAmount" placeholder="Enter amount" min="0" step="0.01">
+                </div>
+
+                <div class="form-group">
+                    <label>Note (Optional)</label>
+                    <textarea id="debitNote" placeholder="Reason for debit..." rows="2"></textarea>
+                </div>
+
+                <button class="btn-primary" onclick="debitUserAccount()">Debit Account</button>
+            </div>
+
             <!-- User Management -->
             <div class="users-section">
                 <div class="users-header">
@@ -452,10 +480,11 @@
     <div id="editUserModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <span>Edit User</span>
+                <span>User Details</span>
                 <button class="modal-close" onclick="closeEditModal()">✕</button>
             </div>
 
+            <!-- Expanded user details display -->
             <div class="form-group">
                 <label>User ID</label>
                 <input type="text" id="editUserId" disabled>
@@ -469,6 +498,40 @@
             <div class="form-group">
                 <label>Email</label>
                 <input type="text" id="editUserEmail" disabled>
+            </div>
+
+            <div class="form-group">
+                <label>Phone</label>
+                <input type="text" id="editUserPhone" disabled>
+            </div>
+
+            <!-- Display user accounts with balances -->
+            <div class="form-group">
+                <label>Accounts</label>
+                <div id="userAccountsDisplay"></div>
+            </div>
+
+            <!-- Auth Verification Section -->
+            <div class="form-group" style="border-top: 2px solid #e0e0e0; padding-top: 16px; margin-top: 16px;">
+                <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                    <input type="checkbox" id="authToggle" onchange="toggleAuthFields()" style="width: auto; cursor: pointer;">
+                    <span>Enable Auth Verification</span>
+                </label>
+                <div style="font-size: 11px; color: #666; margin-top: 5px;">
+                    Require user to enter auth code before completing transactions
+                </div>
+            </div>
+
+            <div id="authFields" style="display: none;">
+                <div class="form-group">
+                    <label>Auth Name (e.g., "IMF CODE")</label>
+                    <input type="text" id="authName" placeholder="Enter auth name">
+                </div>
+
+                <div class="form-group">
+                    <label>Auth Code</label>
+                    <input type="text" id="authCode" placeholder="Enter auth code">
+                </div>
             </div>
 
             <div class="form-group">
@@ -492,207 +555,6 @@
         </div>
     </div>
 
-    <script>
-        let allUsers = [];
-        let selectedUser = null;
-
-        window.addEventListener('load', initializeAdmin);
-
-        async function initializeAdmin() {
-            const adminToken = localStorage.getItem('adminToken');
-            if (!adminToken) {
-                window.location.href = 'login.html';
-                return;
-            }
-
-            document.getElementById('adminName').textContent = localStorage.getItem('adminName') || 'Admin';
-            loadAllUsers();
-            loadStats();
-        }
-
-        async function loadAllUsers() {
-            try {
-                const response = await fetch('/api/admin/users');
-                if (!response.ok) throw new Error('Failed to load users');
-                
-                allUsers = await response.json();
-                renderUsersList(allUsers);
-                updateStats();
-            } catch (error) {
-                console.error('Error loading users:', error);
-                document.getElementById('usersList').innerHTML = '<div style="text-align: center; color: #c41e3a; padding: 20px;">Error loading users</div>';
-            }
-        }
-
-        function renderUsersList(users) {
-            const list = document.getElementById('usersList');
-            list.innerHTML = '';
-
-            if (users.length === 0) {
-                list.innerHTML = '<div style="text-align: center; padding: 40px; color: #999;">No users found</div>';
-                return;
-            }
-
-            users.forEach(user => {
-                const statusClass = `status-${user.status}`;
-                const statusText = user.status.charAt(0).toUpperCase() + user.status.slice(1);
-
-                const item = document.createElement('div');
-                item.className = 'user-item';
-                item.innerHTML = `
-                    <div class="user-info">
-                        <div class="user-name">${user.firstName} ${user.lastName}</div>
-                        <div class="user-email">${user.email}</div>
-                        <span class="user-status ${statusClass}">${statusText}</span>
-                    </div>
-                    <div class="user-actions">
-                        <button class="btn-edit" onclick="openEditModal('${user.userId}')">Edit</button>
-                    </div>
-                `;
-                list.appendChild(item);
-            });
-        }
-
-        async function loadStats() {
-            try {
-                const response = await fetch('/api/admin/users');
-                const users = await response.json();
-                
-                const successful = users.filter(u => u.status === 'successful').length;
-                const suspended = users.filter(u => u.status === 'suspended' || u.status === 'frozen').length;
-
-                document.getElementById('totalUsers').textContent = users.length;
-                document.getElementById('activeUsers').textContent = successful;
-                document.getElementById('suspendedUsers').textContent = suspended;
-
-                // Calculate total balance
-                const accountsResponse = await fetch('/api/admin/accounts-summary');
-                if (accountsResponse.ok) {
-                    const data = await accountsResponse.json();
-                    document.getElementById('totalBalance').textContent = `$${data.totalBalance.toFixed(0)}`;
-                }
-            } catch (error) {
-                console.error('Error loading stats:', error);
-            }
-        }
-
-        function updateStats() {
-            loadStats();
-        }
-
-        async function fundAccount() {
-            const accountNumber = document.getElementById('fundAccountNumber').value;
-            const amount = parseFloat(document.getElementById('fundAmount').value);
-            const description = document.getElementById('fundDescription').value;
-
-            if (!accountNumber || !amount || amount <= 0) {
-                showFundError('Please fill in all fields');
-                return;
-            }
-
-            try {
-                const response = await fetch('/api/admin/fund-account', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ accountNumber, amount, description })
-                });
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                    showFundError(data.message || 'Funding failed');
-                } else {
-                    showFundSuccess('Account funded successfully!');
-                    document.getElementById('fundAccountNumber').value = '';
-                    document.getElementById('fundAmount').value = '';
-                    document.getElementById('fundDescription').value = '';
-                    loadStats();
-                }
-            } catch (error) {
-                showFundError('Error processing funding');
-            }
-        }
-
-        function openEditModal(userId) {
-            const user = allUsers.find(u => u.userId === userId);
-            if (!user) return;
-
-            selectedUser = user;
-            document.getElementById('editUserId').value = user.userId;
-            document.getElementById('editUserName').value = `${user.firstName} ${user.lastName}`;
-            document.getElementById('editUserEmail').value = user.email;
-            document.getElementById('editUserStatus').value = user.status;
-            document.getElementById('editUserNote').value = user.adminNote || '';
-
-            document.getElementById('editUserModal').classList.add('show');
-        }
-
-        function closeEditModal() {
-            document.getElementById('editUserModal').classList.remove('show');
-            selectedUser = null;
-        }
-
-        async function saveUserChanges() {
-            if (!selectedUser) return;
-
-            const status = document.getElementById('editUserStatus').value;
-            const adminNote = document.getElementById('editUserNote').value;
-
-            try {
-                const response = await fetch(`/api/admin/user/${selectedUser.userId}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ status, adminNote })
-                });
-
-                if (response.ok) {
-                    showFundSuccess('User updated successfully');
-                    closeEditModal();
-                    loadAllUsers();
-                } else {
-                    showFundError('Failed to update user');
-                }
-            } catch (error) {
-                showFundError('Error updating user');
-            }
-        }
-
-        function searchUsers() {
-            const search = document.getElementById('userSearch').value.toLowerCase();
-            const filtered = allUsers.filter(u => 
-                u.email.toLowerCase().includes(search) ||
-                u.firstName.toLowerCase().includes(search) ||
-                u.lastName.toLowerCase().includes(search)
-            );
-            renderUsersList(filtered);
-        }
-
-        function showFundSuccess(message) {
-            const msg = document.getElementById('fundSuccessMsg');
-            msg.textContent = message;
-            msg.classList.add('show');
-            setTimeout(() => msg.classList.remove('show'), 3000);
-        }
-
-        function showFundError(message) {
-            const msg = document.getElementById('fundErrorMsg');
-            msg.textContent = message;
-            msg.classList.add('show');
-            setTimeout(() => msg.classList.remove('show'), 3000);
-        }
-
-        function logoutAdmin() {
-            if (confirm('Are you sure you want to logout?')) {
-                localStorage.removeItem('adminToken');
-                localStorage.removeItem('adminName');
-                window.location.href = 'login.html';
-            }
-        }
-
-        // Close modal on outside click
-        document.getElementById('editUserModal')?.addEventListener('click', (e) => {
-            if (e.target.id === 'editUserModal') closeEditModal();
-        });
-    </script>
+    <script src="admin.js"></script>
 </body>
 </html>
